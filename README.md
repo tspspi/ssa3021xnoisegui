@@ -9,12 +9,12 @@ peak against background.
 This package can be installed simply via ```pip```
 
 ```
-pip install ssg3021xnoisegui-tspspi
+pip install ssa3021xnoisegui-tspspi
 ```
 
 ## Usage
 
 ```
-ssg3021xnoisegui
+ssa3021xnoisegui
 ```
 
