@@ -4,6 +4,10 @@ Simple graphical frontend for an SSA3021X spectrum analyzer to
 perform simple noise measurements. It assumes one measures a single
 peak against background.
 
+![Connect window](https://raw.githubusercontent.com/tspspi/ssa3021xnoisegui/refs/heads/master/doc/wndconnect.png)
+
+![Measurement window](https://raw.githubusercontent.com/tspspi/ssa3021xnoisegui/refs/heads/master/doc/wndmeasurement_noise.png)
+
 ## Installation
 
 This package can be installed simply via ```pip```
