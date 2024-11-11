@@ -5,6 +5,7 @@ import sys
 import logging
 
 from pathlib import Path
+from time import time
 
 import FreeSimpleGUI as sg
 import numpy as np
@@ -19,12 +20,16 @@ class NoiseDisplay:
     def __init__(self, cfg, logger):
         self._logger = logger
 
+        self._cfg = cfg
+
         self._plotsize = (320*2, 240*2)
         self._figures = { }
 
         self._updateGraphs = True
 
-        self._lastsweeptime = 0
+        self._nextsweeptime = 0
+
+        self._lastsweepf = None
         self._lastsweep = None
         self._snrs = np.full((cfg["sampling"]["storedsamples"],), None)
         self._sigs = np.full((cfg["sampling"]["storedsamples"],), None)
@@ -35,9 +40,6 @@ class NoiseDisplay:
         )
         self._sa._connect(cfg["ssa"]["ip"])
         print(f"Connecting to {self._sa.get_id()}")
-
-        data = self._sa.query_trace()
-        print(data)
 
     def run(self):
         layout = [
@@ -64,10 +66,63 @@ class NoiseDisplay:
                 self._sa._disconnect()
                 break
 
-            if self._updateGraphs:
-                pass
+            if event in ('btnClear'):
+                self._snrs = np.full((self._cfg["sampling"]["storedsamples"],), None)
+                self._sigs = np.full((self._cfg["sampling"]["storedsamples"],), None)
+                self._updateGraphs = True
 
-     def _init_figure(self, canvasName, xlabel, ylabel, title, grid=True, legend=False):
+            # Check if we should perform a new fetch
+            if self._nextsweeptime < time():
+                # We query new data
+                # Frequencies are in data['frq'] in Hz
+                # Data is in data['data'][0]['data'] in volts or dBm
+
+                data = self._sa.query_trace()
+                self._lastsweepf = np.asarray(data['frq']) / 1e6
+                self._lastsweep = np.asarray(data['data'][0]['data'])
+
+                # Track the peak
+                peakamp = np.max(self._lastsweep)
+
+                # Assume left 1/4 and right 1/4 for noise estimation
+                noisesamples = np.concatenate((
+                    self._lastsweep[:int(len(self._lastsweep)/4)],
+                    self._lastsweep[int(3 * len(self._lastsweep) / 4):]
+                ))
+
+                self._sigs = np.roll(self._sigs, -1)
+                self._snrs = np.roll(self._snrs, -1)
+
+                self._sigs[-1] = peakamp
+                self._snrs[-1] = peakamp / np.mean(noisesamples)
+
+                self._nextsweeptime = time() + self._cfg['sampling']['interval']
+                print(f"Next sweep time: {self._nextsweeptime}")
+
+                self._updateGraphs = True
+
+            if self._updateGraphs:
+                self._updateGraphs = False
+
+                ax = self._figure_begindraw('raw')
+                ax.plot(self._lastsweepf, self._lastsweep)
+                ax.ticklabel_format(useOffset = False)
+                self._figure_enddraw('raw')
+
+                ax = self._figure_begindraw('signals')
+                ax.plot(self._sigs)
+                ax.ticklabel_format(useOffset = False)
+                self._figure_enddraw('signals')
+
+                ax = self._figure_begindraw('snr')
+                ax.plot(self._snrs)
+                ax.ticklabel_format(useOffset = False)
+                self._figure_enddraw('snr')
+
+
+
+
+    def _init_figure(self, canvasName, xlabel, ylabel, title, grid=True, legend=False):
         figTemp = Figure()
         fig = Figure(figsize = ( self._plotsize[0] / figTemp.get_dpi(), self._plotsize[1] / figTemp.get_dpi()) )
 
