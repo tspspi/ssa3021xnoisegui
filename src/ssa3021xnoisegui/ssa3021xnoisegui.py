@@ -3,6 +3,8 @@ import os
 import json
 import sys
 import logging
+import datetime
+import timedelta
 
 from pathlib import Path
 from time import time
@@ -10,8 +12,8 @@ from time import time
 import FreeSimpleGUI as sg
 import numpy as np
 
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, FigureCanvasAgg
+#import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
 from ssa3021x.ssa3021x import SSA3021X
@@ -260,7 +262,7 @@ class ModalDialogError:
 
 class NumpyArrayEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, numpy.ndarray):
+        if isinstance(obj, np.ndarray):
             return obj.tolist()
         if isinstance(obj, datetime):
             return obj.__str__()
@@ -316,6 +318,7 @@ def main():
     except Exception as e:
         cfgs_in_file = { }
         print(f"Failed to load configuration file {cfgfile}")
+        print(e)
 
     # Apply ...
 
