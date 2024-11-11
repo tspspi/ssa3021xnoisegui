@@ -4,8 +4,8 @@ import json
 import sys
 import logging
 import datetime
-import timedelta
 
+from datetime import timedelta
 from pathlib import Path
 from time import time
 
