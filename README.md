@@ -18,3 +18,22 @@ pip install ssa3021xnoisegui-tspspi
 ssa3021xnoisegui
 ```
 
+## Configuration file
+
+One can pre-set some configuration variables in a configuration
+file at ```~/.config/ssa3021xrealtimenoisegui.cfg```. All variables
+are optional:
+
+```
+{
+	"ssa" : {
+		"ip" : "10.4.1.18"
+	},
+    "sampling" : {
+        "window" : 10,
+        "interval" : 0.5,
+        "storedsamples" : 1000
+    }
+}
+
+```
