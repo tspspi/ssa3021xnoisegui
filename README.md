@@ -6,7 +6,17 @@ peak against background.
 
 ![Connect window](https://raw.githubusercontent.com/tspspi/ssa3021xnoisegui/refs/heads/master/doc/wndconnect.png)
 
-![Measurement window](https://raw.githubusercontent.com/tspspi/ssa3021xnoisegui/refs/heads/master/doc/wndmeasurement_noise.png)
+![Measurement window (noise measurement)](https://raw.githubusercontent.com/tspspi/ssa3021xnoisegui/refs/heads/master/doc/wndmeasurement_noise.png)
+
+![Measurement window (signal measurement)](https://raw.githubusercontent.com/tspspi/ssa3021xnoisegui/refs/heads/master/doc/wndmeasurement_signal.png)
+
+The utility requires the spectrum analyzer to:
+
+* Be set to linear scale (this will be fixed in later versions)
+* The center frequency should be set to the desired signal frequency.
+  The program picks the largest peak as signal though.
+* The quarter of samples on the left and to the right of the span is
+  used as basis to calculate the noise floor of the signal.
 
 ## Installation
 
